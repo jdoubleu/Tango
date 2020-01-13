@@ -13,6 +13,11 @@ namespace CSM.Commands.Handler.Internal
 
         protected override void Handle(PlayerLocationCommand command)
         {
+            if (!ConnectionPanel.showPlayerPointers)
+            {
+                return;
+            }
+
             GameObject _playerLocation = GameObject.Find("/PlayerLocation_" + command.PlayerName);
             LineRenderer lineRenderer;
             if (_playerLocation == null)
@@ -32,23 +37,14 @@ namespace CSM.Commands.Handler.Internal
             lineRenderer.material = new Material(Shader.Find("Custom/Particles/Alpha Blended"));
             lineRenderer.startColor = command.PlayerColor;
             lineRenderer.endColor = command.PlayerColor;
+            lineRenderer.startWidth = 1;
+            lineRenderer.endWidth = 1;
 
-            if (!ConnectionPanel.showPlayerPointers)
-            {
-                lineRenderer.startWidth = 0;
-                lineRenderer.endWidth = 0;
-            }
-            else
-            {
-                lineRenderer.startWidth = 1;
-                lineRenderer.endWidth = 1;
-            }
-            
             // Set cube rotation to match the camera
             Transform playerLocation = _playerLocation.transform;
             playerLocation.position = command.PlayerCameraPosition;
             playerLocation.rotation = command.PlayerCameraRotation;
-            
+
             // Make the LineRendered shoot forward (in the direction of the cube)
             Vector3 position = playerLocation.position;
             lineRenderer.SetPosition(0, position);
